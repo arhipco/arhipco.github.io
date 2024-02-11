@@ -102,7 +102,11 @@ class Player {
         window.addEventListener('resize', e => {
             this.resize(e.target.window.innerWidth, e.target.window.innerHeight);
         });
-        
+        window.addEventListener('touchstart', e => { 
+            this.mouse.pressed = true;
+            this.mouse.x = e.changedTouches[0].pageX;
+            this.mouse.y = e.changedTouches[0].pageY;
+        });
         window.addEventListener('mousedown', e => {
             this.mouse.pressed = true;
             this.mouse.x = e.x;
