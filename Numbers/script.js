@@ -19,6 +19,7 @@ class Particle {
     constructor(player, number){
         this.player = player;
         this.number = number;
+        this.ratioIndex = 30;
         this.radius = 0;
         this.x = 0;
         this.y = 0;
@@ -26,7 +27,8 @@ class Particle {
         this.reset();
         this.vx = Math.random() * 2 - 1;
         this.vy = Math.random() * 2 - 1;
-        
+        if (this.vx == 0) this.vx = 1;
+        if (this.vy == 0) this.vy = 1;
     }
     draw(context){
         if(this.isSelected){
@@ -56,17 +58,18 @@ class Particle {
             }
         }
         if(this.isSelected){
-            this.radius = 50;
+            this.radius = this.player.width / this.ratioIndex + 20;
         }
         this.x += this.vx;
         this.y += this.vy;
 
-        if (this.x < this.radius || this.x > this.player.width - this.radius){ 
-            this.vx *= -1;
-        }
-        if (this.y < this.radius || this.y > this.player.height - this.radius){ 
-            this.vy *= -1;
-        }
+        if (this.x < this.radius) this.vx = Math.random();
+            
+        if ( this.x > this.player.width - this.radius) this.vx = -Math.random(); 
+        
+        if (this.y < this.radius) this.vy = Math.random();
+            
+        if ( this.y > this.player.height - this.radius) this.vy = -Math.random();
     }
     reset(){
         if(this.number == currentNumber){
@@ -75,9 +78,9 @@ class Particle {
             this.isSelected = false;
         }
         
+        this.radius = Math.floor(Math.random() * 10 + this.player.width / this.ratioIndex);
         this.x = this.radius + Math.random() * (this.player.width - this.radius * 3);
-        this.y = this.radius + Math.random() * (this.player.height - this.radius * 3);
-        this.radius = Math.floor(Math.random() * 10 + 30);
+        this.y = this.radius + Math.random() * (this.player.height - this.radius * 3); // baseRadius?
     }
 }
 
@@ -95,8 +98,7 @@ class Player {
         this.mouse = {
             x: 0,
             y: 0,
-            pressed: false,
-            radius: 200
+            pressed: false
         }
 
         window.addEventListener('resize', e => {
