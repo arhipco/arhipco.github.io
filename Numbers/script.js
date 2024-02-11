@@ -8,7 +8,7 @@ gradient.addColorStop(0, 'white');
 gradient.addColorStop(0.5, 'gold');
 gradient.addColorStop(1, 'orangered');
 ctx.fillStyle = gradient;
-ctx.strokeStyle = 'white';
+ctx.strokeStyle = 'blue';
 ctx.font = "bold 20px Courier";
 let currentNumber = 1;
 let resetGame = false;
@@ -143,7 +143,7 @@ class Player {
         if(countSelected == this.numberOfParticles){
             this.level++; // NEXT LEVEL
             this.particles = [];
-            this.numberOfParticles *= this.level;
+            this.numberOfParticles = this.level * 10;
             this.createParticles();
             this.resize(this.canvas.width, this.canvas.height);
         }
@@ -166,6 +166,8 @@ class Player {
     }
     connectParticles(context){
         const maxDistance = 300;
+        
+        context.strokeStyle = 'white';
         for (let a = 0; a < this.particles.length; a++){
             for (let b = a; b < this.particles.length; b++){
                 const dx = this.particles[a].x - this.particles[b].x;
@@ -196,7 +198,7 @@ class Player {
         gradient.addColorStop(0.5, 'gold');
         gradient.addColorStop(1, 'orangered');
         this.context.fillStyle = gradient;
-        this.context.strokeStyle = 'white';
+        this.context.strokeStyle = 'blue';
         this.particles.forEach(particle => {
             particle.reset();
         });
