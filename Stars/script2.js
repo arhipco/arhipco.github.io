@@ -21,12 +21,12 @@ class Star {
     }
     
     update(){
-        this.scaleFactor = 3 * maxDepth / (maxDepth + this.z); 
+        this.scaleFactor = 2 * maxDepth / (maxDepth + this.z); 
         this.newX = canvas.width / 2 + (this.x - canvas.width / 2) * this.scaleFactor;
         this.newY = canvas.height / 2 + (this.y - canvas.height / 2) * this.scaleFactor; 
         this.newSize = this.size * this.scaleFactor;
         this.z -= 10;
-        if (this.z < 0) {
+        if (this.newX < 0 || this.newX > canvas.width) {
             this.z = maxDepth;
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * canvas.height;
