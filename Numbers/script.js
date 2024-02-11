@@ -123,12 +123,30 @@ class Player {
             this.resize(this.canvas.width, this.canvas.height);
         }
         this.connectParticles(context);
+        this.connectSelected(context);
          
         ctx.font = "bold 20px Courier";
         this.particles.forEach(particle => {
             particle.draw(context);
             particle.update();
         });
+    }
+    connectSelected(context){
+        context.save();
+        context.strokeStyle = 'green';
+        
+        for (let a = 0; a < this.particles.length -1; a++){
+            if(this.particles[a].isSelected && this.particles[a + 1].isSelected){
+               context.strokeWidth = 15;
+                    context.beginPath();
+                    context.moveTo(this.particles[a].x, this.particles[a].y);
+                    context.lineTo(this.particles[a + 1].x, this.particles[a + 1].y);
+                    context.lineTo(this.particles[a].x + 2, this.particles[a].y + 2);
+                    context.stroke();
+            }
+        }
+        
+        context.restore(); 
     }
     connectParticles(context){
         const maxDistance = 300;
