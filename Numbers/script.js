@@ -1,4 +1,3 @@
-// setup
 const canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -14,7 +13,7 @@ ctx.font = "bold 20px Courier";
 let currentNumber = 1;
 let resetGame = false;
 
-let printTXT = "current number is ";
+let printTXT = "Order numbers";
 
 class Particle {
     constructor(player, number){
@@ -38,6 +37,7 @@ class Particle {
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         context.fill();
+        context.stroke();
         context.fillStyle = 'black'; // print Number
         context.fillText(this.number, this.x - (5 * this.number.toString().length), this.y + 5); 
         //context.stroke();
@@ -75,8 +75,8 @@ class Particle {
             this.isSelected = false;
         }
         
-        this.x = this.radius + Math.random() * (this.player.width - this.radius * 2);
-        this.y = this.radius + Math.random() * (this.player.height - this.radius * 2);
+        this.x = this.radius + Math.random() * (this.player.width - this.radius * 3);
+        this.y = this.radius + Math.random() * (this.player.height - this.radius * 3);
         this.radius = Math.floor(Math.random() * 10 + 30);
     }
 }
@@ -90,6 +90,7 @@ class Player {
         this.particles = [];
         this.numberOfParticles = 10;
         this.createParticles();
+        this.level = 1;
 
         this.mouse = {
             x: 0,
@@ -118,7 +119,7 @@ class Player {
     }
     updateParticles(context){
         context.fillStyle = 'yellow';
-        context.fillText((printTXT + currentNumber), this.canvas.width/2, this.canvas.height - 20);
+        context.fillText((printTXT), 30, this.canvas.height - 20);
         if(resetGame){
             this.resize(this.canvas.width, this.canvas.height);
         }
@@ -126,10 +127,20 @@ class Player {
         this.connectSelected(context);
          
         ctx.font = "bold 20px Courier";
+        let countSelected = 0;
         this.particles.forEach(particle => {
             particle.draw(context);
             particle.update();
+            if(particle.isSelected) countSelected++;
         });
+        
+        if(countSelected == this.numberOfParticles){
+            this.level++; // NEXT LEVEL
+            this.particles = [];
+            this.numberOfParticles *= this.level;
+            this.createParticles();
+            this.resize(this.canvas.width, this.canvas.height);
+        }
     }
     connectSelected(context){
         context.save();
@@ -145,7 +156,6 @@ class Player {
                     context.stroke();
             }
         }
-        
         context.restore(); 
     }
     connectParticles(context){
