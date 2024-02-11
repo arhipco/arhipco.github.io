@@ -19,7 +19,7 @@ class Particle {
     constructor(player, number){
         this.player = player;
         this.number = number;
-        this.ratioIndex = 30;
+        this.ratioIndex = 50;
         this.radius = 0;
         this.x = 0;
         this.y = 0;
