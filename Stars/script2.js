@@ -34,6 +34,8 @@ class Star {
     }
     draw(){
         ctx.fillRect(this.newX, this.newY, this.newSize, this.newSize);
+        ctx.strokeStyle = 'yellow';
+        ctx.strokeRect(0, 0, canvas.width, canvas.height);
     }
 }
 
