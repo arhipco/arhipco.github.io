@@ -25,8 +25,8 @@ class Particle {
         this.y = 0;
         this.isSelected = false;
         this.reset();
-        this.vx = Math.random() * 2 - 1;
-        this.vy = Math.random() * 2 - 1;
+        this.vx = Math.random() * 1 - 0.5;
+        this.vy = Math.random() * 1 - 0.5;
         if (this.vx == 0) this.vx = 1;
         if (this.vy == 0) this.vy = 1;
     }
