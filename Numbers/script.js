@@ -11,6 +11,45 @@ ctx.fillStyle = gradient;
 ctx.strokeStyle = 'blue';
 
 
+
+class myButton {
+    constructor(x, y, r, text) {
+        this.x = x;
+        this.y = y;
+        this.r = r; 
+        this.text = text;
+        this.color = 'orange';
+        this.textColor = 'green';
+        this.clicked = false;
+        this.isHovered = false;
+        this.hoverColor = 'gold';
+        this.draw();
+    }
+    // Check if mouse click is within the button bounds
+    isMouseInsideButton(x, y){
+        const distance = Math.sqrt((x - this.x) ** 2 + (y - this.y) ** 2);
+        return distance <= this.r;
+    }
+
+    isMouseEntered(){
+        this.x += Math.random() * 10 - 5;
+        this.y += Math.random() * 10 - 5;
+    }
+    draw() {
+        ctx.fillStyle = this.color;
+        ctx.strokeStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+ 
+        ctx.fillStyle = this.textColor; // print button text 
+        ctx.font = "bold 20px Courier"; 
+        let textWidth = ctx.measureText(this.text).width; 
+        ctx.fillText(this.text, this.x - textWidth / 2, this.y + 5); 
+    }
+}
+
 class StarField {
     constructor(){
         this.numStars = 133; // Number of stars
@@ -136,7 +175,7 @@ class Particle {
 }
 
 class Player {
-    constructor(canvas, context) {
+    constructor(canvas, context, complexity) {
         this.canvas = canvas;
         this.context = context;
         this.width = this.canvas.width;
@@ -148,7 +187,7 @@ class Player {
         this.currentNumber = 1;
         this.level = 1;
         this.speed;
-        this.complexity = 2;
+        this.complexity = complexity;
         this.mouse = { x: 0, y: 0, pressed: false }
         this.startNewLevel();
         window.addEventListener('resize', e => {
@@ -278,15 +317,63 @@ class Player {
     }
 }
 
+let GameIsStarted = false;
+let player = null;
+let myButtons = [];
+myButtons.push(new myButton(canvas.width / 2 - 100, canvas.height / 2 - 100, 50, 'Easy'));
+myButtons.push(new myButton(canvas.width / 2, canvas.height / 2 , 50, 'Normal'));
+myButtons.push(new myButton(canvas.width / 2 + 100, canvas.height / 2 + 100 , 50, 'Hard'));
 
+// Handle mouse click event on Buttons
+document.addEventListener('mousemove', function(event) {
+    const mouseX = event.clientX; // X-coordinate relative to the viewport
+    const mouseY = event.clientY; // Y-coordinate relative to the viewport
+    myButtons.forEach(button => {
+        if (button.isMouseInsideButton(mouseX, mouseY)) {
+            button.color = 'gold';
+        } else {
+            button.color ='orange';
+        }
+    });
+});
+document.addEventListener('click', function(event) {
+    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    let complexity = 2;
+    myButtons.forEach(button => {
+        if (button.isMouseInsideButton(mouseX, mouseY)) {
+            if(button.text == 'Easy') {
+                console.log('Easy Clicked!');
+                complexity = 2;
+            }
+            if(button.text == 'Normal') {
+                console.log('Normal Clicked!');
+                complexity = 5;
+            }
+            if(button.text == 'Hard') {
+                console.log('Hard Clicked!');
+                complexity = 10;
+            }
+            GameIsStarted = true;
+            player = new Player(canvas, ctx, complexity);
+        }
+    });
+    
+});
 
 const starField = new StarField();
-const player = new Player(canvas, ctx);
 
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     starField.update();
-    player.updateParticles(ctx);
+    if(GameIsStarted == true) {
+        player.updateParticles(ctx);
+    }else{
+        myButtons.forEach(button => {
+            button.draw();
+        });
+    }
+    
     requestAnimationFrame(animate);
 }
 animate();
