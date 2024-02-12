@@ -120,6 +120,7 @@ class Particle {
         } else {
             this.ratioIndex = this.canvas.height / 20;
         }
+        this.ratioIndex -= this.player.level;
         this.radius;
         this.x = 0;
         this.y = 0;
@@ -139,7 +140,7 @@ class Particle {
         context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         context.fill();
         context.stroke();
-        context.font = "bold " + this.ratioIndex + "px Courier";
+        context.font = "bold " + this.ratioIndex *0.8 + "px Courier";
         context.fillStyle = 'black'; // print Number
         context.fillText(this.number,
             this.x - (this.ratioIndex / 4 * this.number.toString().length),
@@ -160,7 +161,13 @@ class Particle {
             }
         }
         if (this.isSelected) {
-            this.radius = this.ratioIndex * 1.5;
+            if(this.x != this.player.width/2) {
+                this.vx = (this.player.width/2 - this.x) / 200;
+            }
+            if(this.y != this.player.height/2) {
+                this.vy= (this.player.height/2 - this.y) / 200;
+            }
+            this.radius = this.ratioIndex / 1.5;
         }
         this.x += this.vx;
         this.y += this.vy;
@@ -241,6 +248,14 @@ class Player {
         this.createParticles();
         this.resize(this.canvas.width, this.canvas.height);
     }
+    shiffleParticles() {
+        // shuffle particles in drawing order
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1)); // Generate a random index from 0 to i
+            [this.particles[i], this.particles[j]] = [this.particles[j], this.particles[i]]; 
+            // Swap elements at indices i and j
+        }
+    }
     updateParticles(context) {
         this.context.fillStyle = 'green';
         this.context.font = "bold " + this.canvas.width / 30 + "px Courier";
@@ -251,8 +266,6 @@ class Player {
             this.resize(this.canvas.width, this.canvas.height);
         }
         this.connectParticles(context);
-        this.connectSelected(context);
-
         let countSelected = 0;
 
         // move next particle to top
@@ -281,21 +294,7 @@ class Player {
             this.startNewLevel();
         }
     }
-    connectSelected(context) {
-        /* context.save();
-        context.strokeStyle = 'green';
-        context.lineWidth = 3;
-
-        for (let a = 0; a < this.particles.length - 1; a++) {
-            if (this.particles[a].isSelected && this.particles[a + 1].isSelected) {
-                context.beginPath();
-                context.moveTo(this.particles[a].x, this.particles[a].y);
-                context.lineTo(this.particles[a + 1].x, this.particles[a + 1].y);
-                context.stroke();
-            }
-        }
-        context.restore(); */
-    }
+   
     connectParticles(context) {
         const maxDistance = 300;
         context.lineWidth = 3;
