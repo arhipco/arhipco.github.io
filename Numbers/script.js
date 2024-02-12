@@ -9,15 +9,43 @@ gradient.addColorStop(0.5, 'gold');
 gradient.addColorStop(1, 'orangered');
 ctx.fillStyle = gradient;
 ctx.strokeStyle = 'blue';
-ctx.font = "bold 20px Courier";
-let currentNumber = 1;
-let resetGame = false;
 
-let printTXT = "Press 'm' to play/pause music. Looking number:";
-const numStars = 133; // Number of stars
-const maxSpeed = 2; // Maximum speed of stars
-const minSize = 1; // Minimum size of stars
-const maxSize = 4; // Maximum size of stars
+
+class StarField {
+    constructor(){
+        this.numStars = 133; // Number of stars
+        this.maxSpeed = 2; // Maximum speed of stars
+        this.minSize = 1; // Minimum size of stars
+        this.maxSize = 4; // Maximum size of stars
+        this.stars = []; 
+        for (let i = 0; i < this.numStars; i++) { 
+            this.addNewStar();
+        } 
+    }
+    addNewStar(){
+        const angle = Math.random() * Math.PI * 2; 
+        const radius = Math.random() * Math.min(canvas.width, canvas.height) / 2;
+        let x = canvas.width / 2 + radius * Math.cos(angle);
+        let y = canvas.height / 2 + radius * Math.sin(angle);
+        let dx = x - canvas.width / 2;
+        let dy = y - canvas.height / 2;
+        let size = this.minSize + Math.random() * (this.maxSize - this.minSize);
+        let speed = Math.random() * this.maxSpeed;
+        
+        this.stars.push(new Star(x, y, dx, dy, size, speed));
+    }
+    update(){
+        ctx.fillStyle = "white";
+        this.stars.forEach(star => {
+            star.update();
+            star.draw();
+            if(star.isOut){
+                this.stars.splice(this.stars.indexOf(star), 1);
+                this.addNewStar();
+            } 
+        });
+    }
+}
 class Star {
     constructor(x, y, dx, dy, size, speed){
         this.x = x;
@@ -42,8 +70,6 @@ class Star {
     }
 }
 
-
-
 class Particle {
     constructor(player, number) {
         this.player = player;
@@ -54,10 +80,10 @@ class Particle {
         this.y = 0;
         this.isSelected = false;
         this.reset();
-        this.vx = Math.random() * 1 - 0.5;
-        this.vy = Math.random() * 1 - 0.5;
-        if (this.vx == 0) this.vx = 1;
-        if (this.vy == 0) this.vy = 1;
+        this.vx = Math.random() * player.speed - player.speed * 0.5;
+        this.vy = Math.random() * player.speed - player.speed * 0.5;
+        //if (this.vx == 0) this.vx = 1;
+        //if (this.vy == 0) this.vy = 1;
     }
     draw(context) {
         if (this.isSelected) {
@@ -73,15 +99,15 @@ class Particle {
         context.fillText(this.number, this.x - (5 * this.number.toString().length), this.y + 5);
     }
     update() {
-        if (player.mouse.pressed) {
-            const distance = Math.hypot((player.mouse.x - this.x), (player.mouse.y - this.y));
+        if (this.player.mouse.pressed) {
+            const distance = Math.hypot((this.player.mouse.x - this.x), (this.player.mouse.y - this.y));
 
             if (distance <= this.radius) {
-                if (this.number == currentNumber + 1) {
-                    currentNumber++;
+                if (this.number == this.player.currentNumber + 1) {
+                    player.currentNumber++;
                     this.isSelected = true;
-                } else if (!resetGame && !this.isSelected) {
-                    resetGame = true;
+                } else if (!player.resetGame && !this.isSelected) {
+                    player.resetGame = true;
                 }
             }
         }
@@ -92,12 +118,12 @@ class Particle {
         this.y += this.vy;
 
         if (this.x < this.radius) this.vx = Math.random();
-        if (this.x > this.player.width - this.radius) this.vx = -Math.random();
+        if (this.x > this.player.width - this.radius) this.vx = -Math.random() * (player.speed - player.speed * 0.5);
         if (this.y < this.radius) this.vy = Math.random();
-        if (this.y > this.player.height - this.radius) this.vy = -Math.random();
+        if (this.y > this.player.height - this.radius) this.vy = -Math.random() * (player.speed - player.speed * 0.5);
     }
     reset() {
-        if (this.number == currentNumber) {
+        if (this.number == this.player.currentNumber) {
             this.isSelected = true;
         } else {
             this.isSelected = false;
@@ -115,17 +141,16 @@ class Player {
         this.context = context;
         this.width = this.canvas.width;
         this.height = this.canvas.height;
+        this.resetGame = false;
+        this.printTXT = " ";
         this.particles = [];
-        this.numberOfParticles = 10;
-        this.createParticles();
+        this.amountParticles = 10;
+        this.currentNumber = 1;
         this.level = 1;
-
-        this.mouse = {
-            x: 0,
-            y: 0,
-            pressed: false
-        }
-        
+        this.speed;
+        this.complexity = 2;
+        this.mouse = { x: 0, y: 0, pressed: false }
+        this.startNewLevel();
         window.addEventListener('resize', e => {
             this.resize(e.target.window.innerWidth, e.target.window.innerHeight);
         });
@@ -155,20 +180,32 @@ class Player {
         }
       }
     createParticles() {
-        for (let i = 0; i < this.numberOfParticles; i++) {
+        for (let i = 0; i < this.amountParticles; i++) {
             this.particles.push(new Particle(this, i + 1));
         }
     }
+    startNewLevel(){
+        this.speed = Math.floor(this.level/2);
+        this.amountParticles = (this.level-this.speed)*this.complexity // где complexity = 2 для лёгкого и 10 для сложного
+    
+        this.context.font = "bold 20px Courier";
+        this.currentNumber = 1;
+        this.resetGame = false;
+
+        this.printTXT = "Press 'm' to play/pause music. Looking number: ";
+        this.createParticles();
+        this.resize(this.canvas.width, this.canvas.height);
+    }
     updateParticles(context) {
-        context.fillStyle = 'yellow';
-        context.fillText(printTXT + (currentNumber + 1), 30, this.canvas.height - 20);
-        if (resetGame) {
+        this.context.fillStyle = 'yellow';
+        this.context.fillText(this.printTXT + (this.currentNumber + 1) + "   Level: " + this.level, 30, this.canvas.height - 20);
+        if (this.resetGame) {
             this.resize(this.canvas.width, this.canvas.height);
         }
         this.connectParticles(context);
         this.connectSelected(context);
 
-        ctx.font = "bold 20px Courier";
+        this.context.font = "bold 20px Courier";
         let countSelected = 0;
         this.particles.forEach(particle => {
 
@@ -178,12 +215,10 @@ class Player {
             if (particle.isSelected) countSelected++;
         });
 
-        if (countSelected == this.numberOfParticles) {
+        if (countSelected == this.amountParticles) {
             this.level++; // NEXT LEVEL
             this.particles = [];
-            this.numberOfParticles = this.level * 10;
-            this.createParticles();
-            this.resize(this.canvas.width, this.canvas.height);
+            this.startNewLevel();
         }
     }
     connectSelected(context) {
@@ -196,7 +231,7 @@ class Player {
                 context.beginPath();
                 context.moveTo(this.particles[a].x, this.particles[a].y);
                 context.lineTo(this.particles[a + 1].x, this.particles[a + 1].y);
-                context.lineTo(this.particles[a].x + 2, this.particles[a].y + 2);
+                //context.lineTo(this.particles[a].x + 2, this.particles[a].y + 2);
                 context.stroke();
             }
         }
@@ -225,8 +260,8 @@ class Player {
         }
     }
     resize(width, height) {
-        resetGame = false;
-        currentNumber = 1;
+        this.resetGame = false;
+        this.currentNumber = 1;
         this.canvas.width = width;
         this.canvas.height = height;
         this.width = width;
@@ -245,36 +280,12 @@ class Player {
 
 
 
-
+const starField = new StarField();
 const player = new Player(canvas, ctx);
- //////////////  
- let stars = [];    
- for (let i = 0; i < numStars; i++) { 
-     addNewStar();
- }    
- function addNewStar(){
-     const angle = Math.random() * Math.PI * 2; 
-     const radius = Math.random() * Math.min(canvas.width, canvas.height) / 2;
-     let x = canvas.width / 2 + radius * Math.cos(angle);
-     let y = canvas.height / 2 + radius * Math.sin(angle);
-     let dx = x - canvas.width / 2;
-     let dy = y - canvas.height / 2;
-     let size = minSize + Math.random() * (maxSize - minSize);
-     let speed = Math.random() * maxSpeed;
-     
-     stars.push(new Star(x, y, dx, dy, size, speed));
- }
+
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
-        stars.forEach(star => {
-            star.update();
-            star.draw();
-            if(star.isOut){
-                stars.splice(stars.indexOf(star), 1);
-                addNewStar();
-            } 
-        });
+    starField.update();
     player.updateParticles(ctx);
     requestAnimationFrame(animate);
 }
