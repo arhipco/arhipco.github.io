@@ -124,6 +124,7 @@ class Particle {
         this.x = 0;
         this.y = 0;
         this.isSelected = false;
+        if(number == 1) this.isSelected = true;
         this.reset();
         this.vx = Math.random() * player.speed - player.speed * 0.5;
         this.vy = Math.random() * player.speed - player.speed * 0.5;
@@ -149,7 +150,6 @@ class Particle {
             const distance = Math.hypot((this.player.mouse.x - this.x), (this.player.mouse.y - this.y));
 
             if (distance <= this.radius) {
-                console.log(this.number + "clicked");
                 this.player.mouse.pressed = false;
                 if (this.number == this.player.currentNumber + 1) {
                     player.currentNumber++;
@@ -160,7 +160,7 @@ class Particle {
             }
         }
         if (this.isSelected) {
-            this.radius = this.ratioIndex * 2;
+            this.radius = this.ratioIndex * 1.5;
         }
         this.x += this.vx;
         this.y += this.vy;
@@ -177,7 +177,7 @@ class Particle {
             this.isSelected = false;
         }
 
-        this.radius = Math.floor(Math.random() * this.ratioIndex / 3 + this.ratioIndex);
+        this.radius = Math.floor(Math.random() * this.ratioIndex / 5 + this.ratioIndex);
         this.x = this.radius + Math.random() * (this.player.width - this.radius * 3);
         this.y = this.radius + Math.random() * (this.player.height - this.radius * 3); // baseRadius?
     }
@@ -282,7 +282,7 @@ class Player {
         }
     }
     connectSelected(context) {
-        context.save();
+        /* context.save();
         context.strokeStyle = 'green';
         context.lineWidth = 3;
 
@@ -294,7 +294,7 @@ class Player {
                 context.stroke();
             }
         }
-        context.restore();
+        context.restore(); */
     }
     connectParticles(context) {
         const maxDistance = 300;
@@ -302,6 +302,21 @@ class Player {
         context.strokeStyle = 'white';
         for (let a = 0; a < this.particles.length; a++) {
             for (let b = a; b < this.particles.length; b++) {
+                
+                if (this.particles[a].isSelected && this.particles[b].isSelected) {
+                    if(this.particles[a].number == this.particles[b].number-1) {
+                        context.save();
+                        context.strokeStyle = 'green';
+                        context.beginPath();
+                        context.moveTo(this.particles[a].x, this.particles[a].y);
+                        context.lineTo(this.particles[b].x, this.particles[b].y);
+                        context.stroke();
+                        context.restore();
+                    }
+                }
+
+
+
                 const dx = this.particles[a].x - this.particles[b].x;
                 const dy = this.particles[a].y - this.particles[b].y;
                 const distance = Math.hypot(dx, dy);
