@@ -324,42 +324,49 @@ myButtons.push(new myButton(canvas.width / 2 - 100, canvas.height / 2 - 100, 50,
 myButtons.push(new myButton(canvas.width / 2, canvas.height / 2 , 50, 'Normal'));
 myButtons.push(new myButton(canvas.width / 2 + 100, canvas.height / 2 + 100 , 50, 'Hard'));
 
+
 // Handle mouse click event on Buttons
 document.addEventListener('mousemove', function(event) {
-    const mouseX = event.clientX; // X-coordinate relative to the viewport
-    const mouseY = event.clientY; // Y-coordinate relative to the viewport
-    myButtons.forEach(button => {
-        if (button.isMouseInsideButton(mouseX, mouseY)) {
-            button.color = 'gold';
-        } else {
-            button.color ='orange';
-        }
-    });
+    if(!GameIsStarted){
+        const mouseX = event.clientX; // X-coordinate relative to the viewport
+        const mouseY = event.clientY; // Y-coordinate relative to the viewport
+        myButtons.forEach(button => {
+            if (button.isMouseInsideButton(mouseX, mouseY)) {
+                button.color = 'gold';
+            } else {
+                button.color ='orange';
+            }
+        });
+    }
 });
 document.addEventListener('click', function(event) {
-    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-    let complexity = 2;
-    myButtons.forEach(button => {
-        if (button.isMouseInsideButton(mouseX, mouseY)) {
-            if(button.text == 'Easy') {
-                console.log('Easy Clicked!');
-                complexity = 2;
+    if(!GameIsStarted){
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        let complexity = 2;
+        myButtons.forEach(button => {
+            if (button.isMouseInsideButton(mouseX, mouseY)) {
+                if(button.text == 'Easy') {
+                    console.log('Easy Clicked!');
+                    complexity = 2;
+                }
+                if(button.text == 'Normal') {
+                    console.log('Normal Clicked!');
+                    complexity = 5;
+                }
+                if(button.text == 'Hard') {
+                    console.log('Hard Clicked!');
+                    complexity = 10;
+                }
+                GameIsStarted = true;
+                player = new Player(canvas, ctx, complexity);
             }
-            if(button.text == 'Normal') {
-                console.log('Normal Clicked!');
-                complexity = 5;
-            }
-            if(button.text == 'Hard') {
-                console.log('Hard Clicked!');
-                complexity = 10;
-            }
-            GameIsStarted = true;
-            player = new Player(canvas, ctx, complexity);
-        }
-    });
-    
+        });
+    }
 });
+
+ 
+
 
 const starField = new StarField();
 
