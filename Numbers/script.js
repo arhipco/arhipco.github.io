@@ -120,12 +120,11 @@ class Particle {
         } else {
             this.ratioIndex = this.canvas.height / 20;
         }
-        this.ratioIndex -= this.player.level;
         this.radius;
+        this.minimalRadius = 10;
         this.x = 0;
         this.y = 0;
         this.isSelected = false;
-        //if(number == 1) this.isSelected = true;
         this.reset();
         this.vx = Math.random() * player.speed - player.speed * 0.5;
         this.vy = Math.random() * player.speed - player.speed * 0.5;
@@ -184,7 +183,8 @@ class Particle {
             this.isSelected = false;
         }
 
-        this.radius = Math.floor(Math.random() * this.ratioIndex / 4 + this.ratioIndex - (this.number / 3));
+        this.radius = this.ratioIndex / 3 + this.ratioIndex - (this.number / 3);
+        if(this.radius < this.minimalRadius) this.radius = this.minimalRadius;  
         this.x = this.radius + Math.random() * (this.player.width - this.radius * 3);
         this.y = this.radius + Math.random() * (this.player.height - this.radius * 3); // baseRadius?
     }
@@ -240,8 +240,9 @@ class Player {
         }
     }
     startNewLevel() {
-        this.speed = Math.floor(this.level / 2);
-        this.amountParticles = (this.level - this.speed) * this.complexity // где complexity = 2 для лёгкого и 10 для сложного
+        this.speed =  this.level / 5;
+        this.amountParticles = (this.level - this.speed) * this.complexity;
+         // где complexity = 2 для лёгкого и 10 для сложного
 
         this.currentNumber = 0;
         this.resetGame = false;
@@ -288,7 +289,7 @@ class Player {
     }
    
     connectParticles(context) {
-        const maxDistance = 300;
+        const maxDistance = this.canvas.width / 4;
         context.lineWidth = 3;
         context.strokeStyle = 'white';
         for (let a = 0; a < this.particles.length; a++) {
@@ -326,7 +327,7 @@ class Player {
     }
     resize(width, height) {
         this.resetGame = false;
-        this.currentNumber;
+        this.currentNumber = 0;
         this.canvas.width = width;
         this.canvas.height = height;
         this.width = width;
