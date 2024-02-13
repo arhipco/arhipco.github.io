@@ -121,7 +121,7 @@ class Particle {
             this.ratioIndex = this.canvas.height / 20;
         }
         this.radius;
-        this.minimalRadius = 10;
+        this.minimalRadius = 20;
         this.x = 0;
         this.y = 0;
         this.isSelected = false;
@@ -183,7 +183,7 @@ class Particle {
             this.isSelected = false;
         }
 
-        this.radius = this.ratioIndex / 3 + this.ratioIndex - (this.number / 3);
+        this.radius = this.ratioIndex / 3 + this.ratioIndex - (this.number / 2);
         if(this.radius < this.minimalRadius) this.radius = this.minimalRadius;  
         this.x = this.radius + Math.random() * (this.player.width - this.radius * 3);
         this.y = this.radius + Math.random() * (this.player.height - this.radius * 3); // baseRadius?
@@ -240,6 +240,7 @@ class Player {
         }
     }
     startNewLevel() {
+        this.level = 20;
         this.speed =  this.level / 5;
         this.amountParticles = (this.level - this.speed) * this.complexity;
          // где complexity = 2 для лёгкого и 10 для сложного
