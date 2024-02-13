@@ -125,7 +125,7 @@ class Particle {
         this.x = 0;
         this.y = 0;
         this.isSelected = false;
-        if(number == 1) this.isSelected = true;
+        //if(number == 1) this.isSelected = true;
         this.reset();
         this.vx = Math.random() * player.speed - player.speed * 0.5;
         this.vy = Math.random() * player.speed - player.speed * 0.5;
@@ -139,12 +139,12 @@ class Particle {
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         context.fill();
-        context.stroke();
-        context.font = "bold " + this.ratioIndex *0.8 + "px Courier";
+        context.stroke(); 
+        context.font = "normal " + this.radius + "px Courier"; 
         context.fillStyle = 'black'; // print Number
         context.fillText(this.number,
-            this.x - (this.ratioIndex / 4 * this.number.toString().length),
-            this.y + this.ratioIndex / 4);
+            this.x - (this.radius * this.number.toString().length / 3.5),
+            this.y + (this.radius * this.number.toString().length / 7));
     }
     update() {
         if (this.player.mouse.pressed) {
@@ -172,10 +172,10 @@ class Particle {
         this.x += this.vx;
         this.y += this.vy;
 
-        if (this.x < this.radius) this.vx = Math.random();
-        if (this.x > this.player.width - this.radius) this.vx = -Math.random() * (player.speed - player.speed * 0.5);
-        if (this.y < this.radius) this.vy = Math.random();
-        if (this.y > this.player.height - this.radius) this.vy = -Math.random() * (player.speed - player.speed * 0.5);
+        if (this.x < this.radius) this.vx = Math.abs(this.vx);
+        if (this.x > this.player.width - this.radius) this.vx = -Math.abs(this.vx);
+        if (this.y < this.radius) this.vy = Math.abs(this.vy);
+        if (this.y > this.player.height - this.radius) this.vy = -Math.abs(this.vy);
     }
     reset() {
         if (this.number == this.player.currentNumber) {
@@ -184,7 +184,7 @@ class Particle {
             this.isSelected = false;
         }
 
-        this.radius = Math.floor(Math.random() * this.ratioIndex / 5 + this.ratioIndex);
+        this.radius = Math.floor(Math.random() * this.ratioIndex / 4 + this.ratioIndex - (this.number / 3));
         this.x = this.radius + Math.random() * (this.player.width - this.radius * 3);
         this.y = this.radius + Math.random() * (this.player.height - this.radius * 3); // baseRadius?
     }
@@ -200,7 +200,7 @@ class Player {
         this.printTXT = " ";
         this.particles = [];
         this.amountParticles;
-        this.currentNumber = 1;
+        this.currentNumber = 0; 
         this.level = 1;
         this.speed;
         this.complexity = complexity;
@@ -243,19 +243,12 @@ class Player {
         this.speed = Math.floor(this.level / 2);
         this.amountParticles = (this.level - this.speed) * this.complexity // где complexity = 2 для лёгкого и 10 для сложного
 
-        this.currentNumber = 1;
+        this.currentNumber = 0;
         this.resetGame = false;
         this.createParticles();
         this.resize(this.canvas.width, this.canvas.height);
     }
-    shiffleParticles() {
-        // shuffle particles in drawing order
-        for (let i = this.particles.length - 1; i >= 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1)); // Generate a random index from 0 to i
-            [this.particles[i], this.particles[j]] = [this.particles[j], this.particles[i]]; 
-            // Swap elements at indices i and j
-        }
-    }
+   
     updateParticles(context) {
         this.context.fillStyle = 'green';
         this.context.font = "bold " + this.canvas.width / 30 + "px Courier";
@@ -278,9 +271,8 @@ class Player {
                 this.particles.push(particle);
             }
         });
-
-        this.particles.forEach(particle => {
-            context.strokeStyle = 'blue';
+        context.strokeStyle = 'blue';
+        this.particles.forEach(particle => {   
             particle.draw(context);
         });
 
@@ -334,7 +326,7 @@ class Player {
     }
     resize(width, height) {
         this.resetGame = false;
-        this.currentNumber = 1;
+        this.currentNumber;
         this.canvas.width = width;
         this.canvas.height = height;
         this.width = width;
