@@ -124,10 +124,9 @@ class Particle {
         this.minimalRadius = 20;
         this.x = 0;
         this.y = 0;
-        this.isSelected = false;
+        this.isSelected;
         this.reset();
-        this.vx = Math.random() * player.speed - player.speed * 0.5;
-        this.vy = Math.random() * player.speed - player.speed * 0.5;
+        
     }
     draw(context) {
         if (this.isSelected) {
@@ -135,6 +134,7 @@ class Particle {
         } else {
             context.fillStyle = gradient;
         }
+        
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         context.fill();
@@ -183,10 +183,12 @@ class Particle {
             this.isSelected = false;
         }
 
-        this.radius = this.ratioIndex / 3 + this.ratioIndex - (this.number / 2);
+        this.radius = this.ratioIndex / 3 + this.ratioIndex - (this.number / 1.5);
         if(this.radius < this.minimalRadius) this.radius = this.minimalRadius;  
         this.x = this.radius + Math.random() * (this.player.width - this.radius * 3);
         this.y = this.radius + Math.random() * (this.player.height - this.radius * 3); // baseRadius?
+        this.vx = Math.random() * this.player.speed - this.player.speed * 0.5;
+        this.vy = Math.random() * this.player.speed - this.player.speed * 0.5;
     }
 }
 
@@ -240,7 +242,8 @@ class Player {
         }
     }
     startNewLevel() {
-        this.speed =  this.level / 4;
+        //this.level = 25;
+        this.speed =  Math.floor(this.level / 2);
         this.amountParticles = Math.floor((this.level - this.speed) * this.complexity);
          // где complexity = 2 для лёгкого и 10 для сложного
 
@@ -272,11 +275,12 @@ class Player {
                 this.particles.push(particle);
             }
         });
-        context.strokeStyle = 'blue';
+        context.strokeStyle = 'blue'; 
+        context.globalAlpha = 0.9;
         this.particles.forEach(particle => {   
             particle.draw(context);
         });
-
+        context.globalAlpha = 1;
         for (let i = this.particles.length - 1; i >= 0; i--) {
             this.particles[i].update();
             if (this.particles[i].isSelected) countSelected++;
