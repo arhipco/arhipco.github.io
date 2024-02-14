@@ -240,8 +240,8 @@ class Player {
         }
     }
     startNewLevel() {
-        this.speed =  this.level / 5;
-        this.amountParticles = (this.level - this.speed) * this.complexity;
+        this.speed =  this.level / 4;
+        this.amountParticles = Math.floor((this.level - this.speed) * this.complexity);
          // где complexity = 2 для лёгкого и 10 для сложного
 
         this.currentNumber = 0;
