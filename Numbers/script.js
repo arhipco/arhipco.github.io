@@ -11,10 +11,11 @@ ctx.fillStyle = gradient;
 ctx.strokeStyle = 'blue';
 
 class myButton {
-    constructor(x, y, r, text) {
+    constructor(x, y, r, text, fontSize) {
         this.x = x;
         this.y = y;
         this.r = r;
+        this.fontSize = fontSize;
         this.text = text;
         this.color = 'orange';
         this.textColor = 'green';
@@ -42,9 +43,9 @@ class myButton {
         ctx.stroke();
 
         ctx.fillStyle = this.textColor; // print button text 
-        ctx.font = "bold 20px Courier";
+        ctx.font = "bold " + this.fontSize + "px Courier";
         let textWidth = ctx.measureText(this.text).width;
-        ctx.fillText(this.text, this.x - textWidth / 2, this.y + 5);
+        ctx.fillText(this.text, this.x - textWidth / 2, this.y + this.fontSize / 3.5);
     }
 }
 
@@ -126,7 +127,7 @@ class Particle {
         this.y = 0;
         this.isSelected;
         this.reset();
-        
+
     }
     draw(context) {
         if (this.isSelected) {
@@ -134,12 +135,12 @@ class Particle {
         } else {
             context.fillStyle = gradient;
         }
-        
+
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         context.fill();
-        context.stroke(); 
-        context.font = "normal " + this.radius + "px Courier"; 
+        context.stroke();
+        context.font = "normal " + this.radius + "px Courier";
         context.fillStyle = 'black'; // print Number
         context.fillText(this.number,
             this.x - (this.radius * this.number.toString().length / 3.5),
@@ -160,11 +161,11 @@ class Particle {
             }
         }
         if (this.isSelected) {
-            if(this.x != this.player.width/2) {
-                this.vx = (this.player.width/2 - this.x) / 200;
+            if (this.x != this.player.width / 2) {
+                this.vx = (this.player.width / 2 - this.x) / 200;
             }
-            if(this.y != this.player.height/2) {
-                this.vy= (this.player.height/2 - this.y) / 200;
+            if (this.y != this.player.height / 2) {
+                this.vy = (this.player.height / 2 - this.y) / 200;
             }
             this.radius = this.ratioIndex / 1.5;
         }
@@ -184,7 +185,7 @@ class Particle {
         }
 
         this.radius = this.ratioIndex / 3 + this.ratioIndex - (this.number / 1.5);
-        if(this.radius < this.minimalRadius) this.radius = this.minimalRadius;  
+        if (this.radius < this.minimalRadius) this.radius = this.minimalRadius;
         this.x = this.radius + Math.random() * (this.player.width - this.radius * 3);
         this.y = this.radius + Math.random() * (this.player.height - this.radius * 3); // baseRadius?
         this.vx = Math.random() * this.player.speed - this.player.speed * 0.5;
@@ -202,7 +203,7 @@ class Player {
         this.printTXT = " ";
         this.particles = [];
         this.amountParticles;
-        this.currentNumber = 0; 
+        this.currentNumber = 0;
         this.level = 1;
         this.speed;
         this.complexity = complexity;
@@ -243,22 +244,21 @@ class Player {
     }
     startNewLevel() {
         //this.level = 25;
-        this.speed =  Math.floor(this.level / 2);
+        myButtons = [];
+        myButtons.push(new myButton(canvas.width / 20,
+         canvas.height - canvas.width / 20, canvas.width / 20, 'M', canvas.width / 15));
+        this.speed = Math.floor(this.level / 2);
         this.amountParticles = Math.floor((this.level - this.speed) * this.complexity);
-         // где complexity = 2 для лёгкого и 10 для сложного
+        // где complexity = 2 для лёгкого и 10 для сложного
 
         this.currentNumber = 0;
         this.resetGame = false;
         this.createParticles();
         this.resize(this.canvas.width, this.canvas.height);
     }
-   
+
     updateParticles(context) {
-        this.context.fillStyle = 'green';
-        this.context.font = "bold " + this.canvas.width / 30 + "px Courier";
-        this.context.fillText("Looking number: " + (this.currentNumber + 1), 10, this.canvas.width / 30);
-        this.context.fillText("Level: " + this.level, this.canvas.width / 2, this.canvas.width / 30);
-        this.context.fillText("Press 'm' to play/pause music.", 10, this.canvas.height - 10);
+
         if (this.resetGame) {
             this.resize(this.canvas.width, this.canvas.height);
         }
@@ -275,9 +275,9 @@ class Player {
                 this.particles.push(particle);
             }
         });
-        context.strokeStyle = 'blue'; 
+        context.strokeStyle = 'blue';
         context.globalAlpha = 0.9;
-        this.particles.forEach(particle => {   
+        this.particles.forEach(particle => {
             particle.draw(context);
         });
         context.globalAlpha = 1;
@@ -290,17 +290,25 @@ class Player {
             this.particles = [];
             this.startNewLevel();
         }
+        // button M for music toggle
+        let q = this.canvas.width / 20;
+        
+        this.context.fillStyle = 'green';
+        this.context.font = "bold " + q / 1.2 + "px Courier";
+        this.context.fillText("Looking number: " + (this.currentNumber + 1), 10, this.canvas.width / 30);
+        this.context.fillText("Level: " + this.level, this.canvas.width / 2, this.canvas.width / 30);
+        this.context.fillText("_   to play/pause music.", q - q / 4, this.canvas.height - q + q / 4);
     }
-   
+
     connectParticles(context) {
         const maxDistance = this.canvas.width / 4;
         context.lineWidth = 3;
         context.strokeStyle = 'white';
         for (let a = 0; a < this.particles.length; a++) {
             for (let b = a; b < this.particles.length; b++) {
-                
+
                 if (this.particles[a].isSelected && this.particles[b].isSelected) {
-                    if(this.particles[a].number == this.particles[b].number-1) {
+                    if (this.particles[a].number == this.particles[b].number - 1) {
                         context.save();
                         context.strokeStyle = 'green';
                         context.beginPath();
@@ -351,9 +359,14 @@ class Player {
 let GameIsStarted = false;
 let player = null;
 let myButtons = [];
-myButtons.push(new myButton(canvas.width / 2 - 100, canvas.height / 2 - 100, 50, 'Easy'));
-myButtons.push(new myButton(canvas.width / 2, canvas.height / 2, 50, 'Normal'));
-myButtons.push(new myButton(canvas.width / 2 + 100, canvas.height / 2 + 100, 50, 'Hard'));
+let q = canvas.width / 8;
+if (canvas.width < canvas.height) {
+    q = canvas.height / 8;
+}
+
+myButtons.push(new myButton(canvas.width / 2 - q, canvas.height / 2 - q, q / 2, 'Easy', q / 4));
+myButtons.push(new myButton(canvas.width / 2, canvas.height / 2, q / 2, 'Normal', q / 4));
+myButtons.push(new myButton(canvas.width / 2 + q, canvas.height / 2 + q, q / 2, 'Hard', q / 4));
 
 
 // Handle mouse click event on Buttons
@@ -371,12 +384,13 @@ document.addEventListener('mousemove', function (event) {
     }
 });
 document.addEventListener('click', function (event) {
-    if (!GameIsStarted) {
-        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-        let complexity = 2;
-        myButtons.forEach(button => {
-            if (button.isMouseInsideButton(mouseX, mouseY)) {
+
+    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    let complexity = 2;
+    myButtons.forEach(button => {
+        if (button.isMouseInsideButton(mouseX, mouseY)) {
+            if (!GameIsStarted) {
                 if (button.text == 'Easy') {
                     complexity = 2;
                 }
@@ -388,9 +402,13 @@ document.addEventListener('click', function (event) {
                 }
                 GameIsStarted = true;
                 player = new Player(canvas, ctx, complexity);
+            } else {
+                if (button.text == 'M') {
+                    player.toggleMusic();
+                }
             }
-        });
-    }
+        }
+    });
 });
 
 const starField = new StarField();
@@ -400,11 +418,12 @@ function animate() {
     starField.update();
     if (GameIsStarted == true) {
         player.updateParticles(ctx);
-    } else {
-        myButtons.forEach(button => {
-            button.draw();
-        });
+    //} else {
+       
     }
+    myButtons.forEach(button => {
+        button.draw();
+    });
 
     requestAnimationFrame(animate);
 }
