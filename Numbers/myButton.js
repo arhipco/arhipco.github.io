@@ -10,17 +10,10 @@ class myButton {
         this.clicked = false;
         this.isHovered = false;
         this.hoverColor = 'gold';
-        this.draw();
     }
-    // Check if mouse click is within the button bounds
     isMouseInsideButton(x, y) {
-        const distance = Math.sqrt((x - this.x) ** 2 + (y - this.y) ** 2);
+        const distance = Math.hypot((x - this.x),(y - this.y));
         return distance <= this.r;
-    }
-
-    isMouseEntered() {
-        this.x += Math.random() * 10 - 5;
-        this.y += Math.random() * 10 - 5;
     }
     draw() {
         ctx.fillStyle = this.color;
