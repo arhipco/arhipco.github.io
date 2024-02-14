@@ -10,8 +10,7 @@ gradient.addColorStop(1, 'orangered');
 ctx.fillStyle = gradient;
 ctx.strokeStyle = 'blue';
 
-
-
+const starField = new StarField();
 const player = new Player(canvas, ctx, 0);
 let GameIsStarted = false;
 let myButtons = [];
@@ -19,11 +18,10 @@ let q = canvas.width / 8;
 if (canvas.width < canvas.height) {
     q = canvas.height / 8;
 }
-
+// menu buttons
 myButtons.push(new myButton(canvas.width / 2 - q, canvas.height / 2 - q, q / 2, 'Easy', q / 4));
 myButtons.push(new myButton(canvas.width / 2, canvas.height / 2, q / 2, 'Normal', q / 4));
 myButtons.push(new myButton(canvas.width / 2 + q, canvas.height / 2 + q, q / 2, 'Hard', q / 4));
-
 
 // Handle mouse click event on Buttons
 window.addEventListener('resize', e => {
@@ -42,30 +40,23 @@ window.addEventListener('keydown', e => {
     if (e.key == 'm') this.toggleMusic();
 });
 
-document.addEventListener('mousemove', function (event) {
-   // if (!GameIsStarted) {
-        const mouseX = event.clientX; // X-coordinate relative to the viewport
-        const mouseY = event.clientY; // Y-coordinate relative to the viewport
-        myButtons.forEach(button => {
-            if (button.isMouseInsideButton(mouseX, mouseY)) {
-                button.color = 'gold';
-            } else {
-                button.color = 'orange';
-            }
-        });
-    //}
+window.addEventListener('mousemove', e => {
+    player.mouse.x = e.x;
+    player.mouse.y = e.y;
+    myButtons.forEach(button => {
+        if (button.isMouseInsideButton(player.mouse.x, player.mouse.y)) {
+            button.color = 'gold';
+        } else {
+            button.color = 'orange';
+        }
+    });
 });
 window.addEventListener('mousedown', e => {
     player.mouse.pressed = true;
     player.mouse.x = e.x;
     player.mouse.y = e.y;
-});
-document.addEventListener('click', function (event) {
-    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-
     myButtons.forEach(button => {
-        if (button.isMouseInsideButton(mouseX, mouseY)) {
+        if (button.isMouseInsideButton(player.mouse.x, player.mouse.y)) {
             if (!GameIsStarted) {
                 if (button.text == 'Easy') {
                     player.complexity = 2;
@@ -87,15 +78,11 @@ document.addEventListener('click', function (event) {
     });
 });
 
-const starField = new StarField();
-
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     starField.update();
     if (GameIsStarted == true) {
         player.updateParticles(ctx);
-    //} else {
-       
     }
     myButtons.forEach(button => {
         button.draw();

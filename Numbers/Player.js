@@ -13,8 +13,6 @@ class Player {
         this.speed;
         this.complexity = complexity;
         this.mouse = { x: 0, y: 0, pressed: false }
-
-       
     }
     toggleMusic() {
         this.bgMusic = document.getElementById('bg-music');
@@ -33,7 +31,7 @@ class Player {
         //this.level = 25;
         myButtons = [];
         myButtons.push(new myButton(canvas.width / 20,
-         canvas.height - canvas.width / 20, canvas.width / 20, 'M', canvas.width / 15));
+            canvas.height - canvas.width / 20, canvas.width / 20, 'M', canvas.width / 15));
         this.speed = Math.floor(this.level / 2);
         this.amountParticles = Math.floor((this.level - this.speed) * this.complexity);
         // где complexity = 2 для лёгкого и 10 для сложного
@@ -45,7 +43,6 @@ class Player {
     }
 
     updateParticles(context) {
-
         if (this.resetGame) {
             this.resize(this.canvas.width, this.canvas.height);
         }
@@ -78,7 +75,7 @@ class Player {
             this.startNewLevel();
         }
         let q = this.canvas.width / 20;
-        
+
         this.context.fillStyle = 'green';
         this.context.font = "bold " + q / 1.2 + "px Courier";
         this.context.fillText("Looking number: " + (this.currentNumber + 1), 10, this.canvas.width / 30);
@@ -92,7 +89,6 @@ class Player {
         context.strokeStyle = 'white';
         for (let a = 0; a < this.particles.length; a++) {
             for (let b = a; b < this.particles.length; b++) {
-
                 if (this.particles[a].isSelected && this.particles[b].isSelected) {
                     if (this.particles[a].number == this.particles[b].number - 1) {
                         context.save();
@@ -104,9 +100,6 @@ class Player {
                         context.restore();
                     }
                 }
-
-
-
                 const dx = this.particles[a].x - this.particles[b].x;
                 const dy = this.particles[a].y - this.particles[b].y;
                 const distance = Math.hypot(dx, dy);
