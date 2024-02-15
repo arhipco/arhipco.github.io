@@ -28,7 +28,7 @@ class Player {
         }
     }
     startNewLevel() {
-        //this.level = 25;
+        this.level = 25;
         myButtons = [];
         myButtons.push(new myButton(canvas.width / 20,
             canvas.height - canvas.width / 20, canvas.width / 20, 'M', canvas.width / 15));
@@ -77,6 +77,7 @@ class Player {
         let q = this.canvas.width / 20;
 
         this.context.fillStyle = 'green';
+        this.context.textAlign = "left";
         this.context.font = "bold " + q / 1.2 + "px Courier";
         this.context.fillText("Looking number: " + (this.currentNumber + 1), 10, this.canvas.width / 30);
         this.context.fillText("Level: " + this.level, this.canvas.width / 2, this.canvas.width / 30);
