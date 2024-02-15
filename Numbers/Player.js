@@ -28,7 +28,7 @@ class Player {
         }
     }
     startNewLevel() {
-        this.level = 25;
+        //this.level = 25;
         myButtons = [];
         myButtons.push(new myButton(canvas.width / 20,
             canvas.height - canvas.width / 20, canvas.width / 20, 'M', canvas.width / 15));
