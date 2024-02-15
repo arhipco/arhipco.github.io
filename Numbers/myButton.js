@@ -24,8 +24,9 @@ class myButton {
         ctx.stroke();
 
         ctx.fillStyle = this.textColor; // print button text 
+        ctx.textBaseline = 'middle';
         ctx.font = "bold " + this.fontSize + "px Courier";
         let textWidth = ctx.measureText(this.text).width;
-        ctx.fillText(this.text, this.x - textWidth / 2, this.y + this.fontSize / 3.5);
+        ctx.fillText(this.text, this.x - textWidth / 2, this.y);
     }
 }

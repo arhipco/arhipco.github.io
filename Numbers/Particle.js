@@ -30,10 +30,12 @@ class Particle {
         context.fill();
         context.stroke();
         context.font = "normal " + this.radius + "px Courier";
+        ctx.textBaseline = 'middle';
         context.fillStyle = 'black'; // print Number
         context.fillText(this.number,
             this.x - (this.radius * this.number.toString().length / 3.5),
-            this.y + (this.radius * this.number.toString().length / 7));
+            this.y);
+           // this.y + (this.radius * this.number.toString().length / 7));
     }
     update() {
         if (this.player.mouse.pressed) {

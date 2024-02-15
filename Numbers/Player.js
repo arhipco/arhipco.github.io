@@ -80,7 +80,7 @@ class Player {
         this.context.font = "bold " + q / 1.2 + "px Courier";
         this.context.fillText("Looking number: " + (this.currentNumber + 1), 10, this.canvas.width / 30);
         this.context.fillText("Level: " + this.level, this.canvas.width / 2, this.canvas.width / 30);
-        this.context.fillText("_   to play/pause music.", q - q / 4, this.canvas.height - q + q / 4);
+        this.context.fillText("   to play/pause music.", q - q / 4, this.canvas.height - q + q / 4);
     }
 
     connectParticles(context) {
