@@ -15,7 +15,9 @@ class Player {
         this.mouse = { x: 0, y: 0, pressed: false };
         this.timer = null;
         this.timer = new Timer();
+        this.currentTime;
         this.timer.start();
+        this.timeStats = new Stats(); 
     }
     toggleMusic() {
         this.bgMusic = document.getElementById('bg-music');
@@ -33,6 +35,9 @@ class Player {
     startNewLevel() {
         //this.level = 25;
         this.timer.reset();
+        this.timeStats.loadGameTimes(this.level);
+        console.log(this.level + "-------");
+        this.timeStats.updateTimesBoard();
         myButtons = [];
         myButtons.push(new myButton(canvas.width / 20,
             canvas.height - canvas.width / 20, canvas.width / 20, 'M', canvas.width / 15));
@@ -74,6 +79,8 @@ class Player {
             if (this.particles[i].isSelected) countSelected++;
         }
         if (countSelected == this.amountParticles) {
+            this.currentTime = this.timer.getTimeAsText();
+            this.timeStats.addGameTime(this.level, this.currentTime);
             this.level++; // NEXT LEVEL
             this.particles = [];
             this.startNewLevel();

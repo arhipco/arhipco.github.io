@@ -40,6 +40,9 @@ class Timer {
     getTimeAsText() {   
         return this.textTime;
     }
+    getTimeAsSummSeconds(){
+        return this.minutes * 60 + this.seconds;
+    }
 }
 
 // Example usage:
