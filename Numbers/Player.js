@@ -12,7 +12,10 @@ class Player {
         this.level = 1;
         this.speed;
         this.complexity = complexity;
-        this.mouse = { x: 0, y: 0, pressed: false }
+        this.mouse = { x: 0, y: 0, pressed: false };
+        this.timer = null;
+        this.timer = new Timer();
+        this.timer.start();
     }
     toggleMusic() {
         this.bgMusic = document.getElementById('bg-music');
@@ -29,6 +32,7 @@ class Player {
     }
     startNewLevel() {
         //this.level = 25;
+        this.timer.reset();
         myButtons = [];
         myButtons.push(new myButton(canvas.width / 20,
             canvas.height - canvas.width / 20, canvas.width / 20, 'M', canvas.width / 15));
@@ -74,14 +78,18 @@ class Player {
             this.particles = [];
             this.startNewLevel();
         }
+        this.showInfoText();
+    }
+    showInfoText() {
         let q = this.canvas.width / 20;
 
         this.context.fillStyle = 'green';
         this.context.textAlign = "left";
         this.context.font = "bold " + q / 1.2 + "px Courier";
         this.context.fillText("Looking number: " + (this.currentNumber + 1), 10, this.canvas.width / 30);
-        this.context.fillText("Level: " + this.level, this.canvas.width / 2, this.canvas.width / 30);
-        this.context.fillText("   to play/pause music.", q - q / 4, this.canvas.height - q + q / 4);
+        this.context.fillText("Level: " + this.level, this.canvas.width / 2 + q * 2, this.canvas.width / 30);
+        this.context.fillText("play/pause music.", q * 2, this.canvas.height - q + q / 4);
+        this.context.fillText("Timer: " + this.timer.getTimeAsText(),  this.canvas.width / 2 + q * 2, this.canvas.height - q + q / 4);
     }
 
     connectParticles(context) {

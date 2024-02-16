@@ -4,14 +4,10 @@ class Particle {
         this.player = player;
         this.number = number;
         this.onTop = false;
-        this.ratioIndex = 30;
-        if (this.canvas.width > this.canvas.height) {
-            this.ratioIndex = this.canvas.width / 20;
-        } else {
-            this.ratioIndex = this.canvas.height / 20;
-        }
         this.radius;
         this.minimalRadius = 20;
+        this.minRadius = Math.min(this.canvas.width, this.canvas.height) / 20;
+        this.maxRadius = Math.min(this.canvas.width, this.canvas.height) / 10;
         this.x = 0;
         this.y = 0;
         this.isSelected;
@@ -56,7 +52,7 @@ class Particle {
             if (this.y != this.player.height / 2) {
                 this.vy = (this.player.height / 2 - this.y) / 200;
             }
-            this.radius = this.ratioIndex / 1.5;
+            this.radius = this.minRadius;
         }
         this.x += this.vx;
         this.y += this.vy;
@@ -73,8 +69,8 @@ class Particle {
             this.isSelected = false;
         }
 
-        this.radius = this.ratioIndex / 3 + this.ratioIndex - (this.number / 1.5);
-        if (this.radius < this.minimalRadius) this.radius = this.minimalRadius;
+        this.radius = this.maxRadius - (this.maxRadius - this.minRadius) / this.player.particles.length * (this.number - 1);
+        if (this.radius < this.minRadius) this.radius = this.minRadius;
         this.x = this.radius + Math.random() * (this.player.width - this.radius * 3);
         this.y = this.radius + Math.random() * (this.player.height - this.radius * 3); // baseRadius?
         this.vx = Math.random() * this.player.speed - this.player.speed * 0.5;
