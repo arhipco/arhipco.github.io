@@ -1,5 +1,6 @@
 class myButton {
-    constructor(x, y, r, text, fontSize) {
+    constructor(group, x, y, r, text, fontSize) {
+        this.group = group;
         this.x = x;
         this.y = y;
         this.r = r;
@@ -25,8 +26,10 @@ class myButton {
 
         ctx.fillStyle = this.textColor; // print button text 
         ctx.textBaseline = 'middle';
-        ctx.font = "bold " + this.fontSize + "px Courier";
         let textWidth = ctx.measureText(this.text).width;
-        ctx.fillText(this.text, this.x - textWidth / 2, this.y);
+        ctx.font = "bold " + this.fontSize + "px Courier";
+
+        ctx.textAlign = 'center';
+        ctx.fillText(this.text, this.x, this.y);
     }
 }

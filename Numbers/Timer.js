@@ -45,10 +45,5 @@ class Timer {
     }
 }
 
-// Example usage:
-const timer = new Timer();
-timer.start(); // Start the timer
-// To stop the timer, call timer.stop()
-// To reset the timer, call timer.reset()
  
 

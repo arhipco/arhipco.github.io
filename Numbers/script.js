@@ -9,42 +9,56 @@ gradient.addColorStop(0.5, 'gold');
 gradient.addColorStop(1, 'orangered');
 ctx.fillStyle = gradient;
 ctx.strokeStyle = 'blue';
+ctx.textAlign = 'center';
 
+
+let mouse = { x: 0, y: 0, pressed: false };
 const starField = new StarField();
 const player = new Player(canvas, ctx, 0);
-let GameIsStarted = false;
+const popUp = new PopUp(player);
+
+let gameHardness = 'Easy'
+let GameState = "menu"; // menu, game, gameover, popup 
 let myButtons = [];
-let q = canvas.width / 8;
-if (canvas.width < canvas.height) {
-    q = canvas.height / 8;
-}
+let q  = Math.min(canvas.width, canvas.height) / 8;
+
 // menu buttons
-myButtons.push(new myButton(canvas.width / 2 - q, canvas.height / 2 - q, q / 2, 'Easy', q / 4));
-myButtons.push(new myButton(canvas.width / 2, canvas.height / 2, q / 2, 'Normal', q / 4));
-myButtons.push(new myButton(canvas.width / 2 + q, canvas.height / 2 + q, q / 2, 'Hard', q / 4));
+myButtons.push(new myButton("menu", canvas.width / 2 - q, canvas.height / 2 - q, q / 2, 'Easy', q / 4));
+myButtons.push(new myButton("menu", canvas.width / 2, canvas.height / 2, q / 2, 'Normal', q / 4));
+myButtons.push(new myButton("menu", canvas.width / 2 + q, canvas.height / 2 + q, q / 2, 'Hard', q / 4));
+
+// game button
+myButtons.push(new myButton("game", canvas.width / 20, canvas.height - canvas.width / 20, canvas.width / 20, 'M', canvas.width / 15));
+
+// popUp buttons
+myButtons.push(new myButton("popup", q * 2.5, q*6, q, 'Restart', q / 2.5 ));
+myButtons.push(new myButton("popup", q * 6, q*6, q, 'Next', q / 2.5));
 
 // Handle mouse click event on Buttons
 window.addEventListener('resize', e => {
     player.resize(e.target.window.innerWidth, e.target.window.innerHeight);
 });
 window.addEventListener('touchstart', e => {
-    player.mouse.pressed = true;
-    player.mouse.x = e.changedTouches[0].pageX;
-    player.mouse.y = e.changedTouches[0].pageY;
+    if(!mouse.pressed) {
+        mouse.pressed = true;
+        mouse.x = e.changedTouches[0].pageX;
+        mouse.y = e.changedTouches[0].pageY;
+    }
 });
-
+window.addEventListener('touchend', e => {
+    mouse.pressed = false;
+});
 window.addEventListener('mouseup', e => {
-    player.mouse.pressed = false;
+    mouse.pressed = false;
 });
 window.addEventListener('keydown', e => {
     if (e.key == 'm') this.toggleMusic();
 });
-
 window.addEventListener('mousemove', e => {
-    player.mouse.x = e.x;
-    player.mouse.y = e.y;
+    mouse.x = e.x;
+    mouse.y = e.y;
     myButtons.forEach(button => {
-        if (button.isMouseInsideButton(player.mouse.x, player.mouse.y)) {
+        if (button.isMouseInsideButton(mouse.x, mouse.y)) {
             button.color = 'gold';
         } else {
             button.color = 'orange';
@@ -52,42 +66,72 @@ window.addEventListener('mousemove', e => {
     });
 });
 window.addEventListener('mousedown', e => {
-    player.mouse.pressed = true;
-    player.mouse.x = e.x;
-    player.mouse.y = e.y;
-    myButtons.forEach(button => {
-        if (button.isMouseInsideButton(player.mouse.x, player.mouse.y)) {
-            if (!GameIsStarted) {
-                if (button.text == 'Easy') {
-                    player.complexity = 2;
+    if(!mouse.pressed) {
+        mouse.pressed = true;
+        mouse.x = e.x;
+        mouse.y = e.y; 
+    }
+});
+function checkClickTap() {
+    if(mouse.pressed) {
+        myButtons.forEach(button => {
+            if (button.isMouseInsideButton(mouse.x, mouse.y)) {
+                if (GameState == "menu") {
+                    if (button.text == 'Easy') {
+                        gameHardness = 'Easy';  
+                        player.complexity = 2;
+                    }
+                    if (button.text == 'Normal') {
+                        gameHardness = 'Normal';
+                        player.complexity = 5;
+                    }
+                    if (button.text == 'Hard') {
+                        gameHardness = 'Hard';
+                        player.complexity = 10;
+                    }
+                    GameState = "game";
+                    player.startNewLevel();
                 }
-                if (button.text == 'Normal') {
-                    player.complexity = 5;
+                if (GameState == "game") {
+                    if (button.text == 'M') {
+                        player.toggleMusic();
+                    }
                 }
-                if (button.text == 'Hard') {
-                    player.complexity = 10;
-                }
-                GameIsStarted = true;
-                player.startNewLevel();
-            } else {
-                if (button.text == 'M') {
-                    player.toggleMusic();
+                if (GameState == "gameover") {}
+                if(GameState == "popup") {
+                    if (button.text == 'Restart') {
+                        mouse.pressed = false;
+                        GameState = "menu";
+                        popUp.isOpened = false;
+                        player.resetGame = true;
+                        player.level = 1;
+                    }
+                    if (button.text == 'Next') {
+                        mouse.pressed = false;
+                        popUp.isOpened = false;
+                        GameState = "game";
+                        player.level++; // NEXT LEVEL§
+                        player.startNewLevel();
+                    }
                 }
             }
-        }
-    });
-});
-
+        });
+    }
+}
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     starField.update();
-    if (GameIsStarted == true) {
+    checkClickTap();
+    if (GameState == "game") {
         player.updateParticles(ctx);
     }
+    if (GameState == "menu") {}
+    if(GameState == "popup") {
+        popUp.openPopUp(player.level, player.timer.getTimeAsSummSeconds());
+    } 
     myButtons.forEach(button => {
-        button.draw();
+        if(GameState == button.group) button.draw();
     });
-
     requestAnimationFrame(animate);
 }
 animate();

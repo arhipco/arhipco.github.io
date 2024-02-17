@@ -12,12 +12,9 @@ class Player {
         this.level = 1;
         this.speed;
         this.complexity = complexity;
-        this.mouse = { x: 0, y: 0, pressed: false };
         this.timer = null;
         this.timer = new Timer();
-        this.currentTime;
         this.timer.start();
-        this.timeStats = new Stats(); 
     }
     toggleMusic() {
         this.bgMusic = document.getElementById('bg-music');
@@ -34,13 +31,10 @@ class Player {
     }
     startNewLevel() {
         //this.level = 25;
+        
         this.timer.reset();
-        this.timeStats.loadGameTimes(this.level);
-        console.log(this.level + "-------");
-        this.timeStats.updateTimesBoard();
-        myButtons = [];
-        myButtons.push(new myButton(canvas.width / 20,
-            canvas.height - canvas.width / 20, canvas.width / 20, 'M', canvas.width / 15));
+        this.timer.start();
+        
         this.speed = Math.floor(this.level / 2);
         this.amountParticles = Math.floor((this.level - this.speed) * this.complexity);
         // где complexity = 2 для лёгкого и 10 для сложного
@@ -79,11 +73,11 @@ class Player {
             if (this.particles[i].isSelected) countSelected++;
         }
         if (countSelected == this.amountParticles) {
-            this.currentTime = this.timer.getTimeAsText();
-            this.timeStats.addGameTime(this.level, this.currentTime);
-            this.level++; // NEXT LEVEL
+            // открываем ПопАп и передаём туда уровень и текущее время
+            GameState = "popup"; 
+            this.timer.stop();
             this.particles = [];
-            this.startNewLevel();
+            //this.startNewLevel(); // этот метод вызываем, когда нажмём кнопку в ПопАп "дальше"
         }
         this.showInfoText();
     }

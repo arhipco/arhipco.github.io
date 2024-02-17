@@ -32,18 +32,20 @@ class Particle {
         context.fillText(this.number, this.x, this.y);
     }
     update() {
-        if (this.player.mouse.pressed) {
-            const distance = Math.hypot((this.player.mouse.x - this.x), (this.player.mouse.y - this.y));
+        if (mouse.pressed) {
+            const distance = Math.hypot((mouse.x - this.x), (mouse.y - this.y));
 
             if (distance <= this.radius) {
-                this.player.mouse.pressed = false;
+                
                 if (this.number == this.player.currentNumber + 1) {
                     player.currentNumber++;
                     this.isSelected = true;
+                    mouse.pressed = false;
                 } else if (!player.resetGame && !this.isSelected) {
                     player.resetGame = true;
                 }
             }
+
         }
         if (this.isSelected) {
             if (this.x != this.player.width / 2) {
