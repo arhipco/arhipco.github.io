@@ -40,11 +40,12 @@ myButtons.push(new myButton("popup", q * 6, q*6, q, 'Next', q / 2.5));
 window.addEventListener('resize', e => {
     player.resize(e.target.window.innerWidth, e.target.window.innerHeight);
 });
-window.addEventListener('touchstart', e => {
+window.addEventListener('touchstart', e => { 
     if(!mouse.pressed) {
         mouse.pressed = true;
         mouse.x = e.changedTouches[0].pageX;
         mouse.y = e.changedTouches[0].pageY;
+        checkClickTap();
     }
 });
 window.addEventListener('touchend', e => {
@@ -67,7 +68,7 @@ window.addEventListener('mousemove', e => {
         }
     });
 });
-window.addEventListener('click', e => {
+window.addEventListener('mousedown', e => {
     if(!mouse.pressed) {
         mouse.pressed = true;
         mouse.x = e.x;
@@ -97,7 +98,7 @@ function checkClickTap() {
                 }
                 if (GameState == "game") {
                     if (button.text == 'M') {
-                        player.toggleMusic();
+                        player.toggleMusic(); 
                     }
                     if (button.text == 'R') {
                         transitionEffect = true;
@@ -152,8 +153,7 @@ function animate() {
             transitionColor = 0;
         }   
     }
-
-    mouse.pressed = false;
+    //mouse.pressed = false;
     requestAnimationFrame(animate);
 }
 animate();
