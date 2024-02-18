@@ -17,6 +17,8 @@ const starField = new StarField();
 const player = new Player(canvas, ctx, 0);
 const popUp = new PopUp(player);
 
+let transitionEffect = false;
+let transitionColor = 0;
 let gameHardness = 'Easy'
 let GameState = "menu"; // menu, game, gameover, popup 
 let myButtons = [];
@@ -65,7 +67,7 @@ window.addEventListener('mousemove', e => {
         }
     });
 });
-window.addEventListener('mousedown', e => {
+window.addEventListener('click', e => {
     if(!mouse.pressed) {
         mouse.pressed = true;
         mouse.x = e.x;
@@ -93,23 +95,29 @@ function checkClickTap() {
                     GameState = "game";
                     player.startNewLevel();
                 }
-                //if (GameState == "game") {
+                if (GameState == "game") {
                     if (button.text == 'M') {
                         player.toggleMusic();
                     }
                     if (button.text == 'R') {
+                        transitionEffect = true;
+                        transitionColor = 0;
                         GameState = "menu";
                         player.resetGame = true;
                         player.level = 1;
                     }
-                //}
-                if(GameState == "popup") {
+                }
+                if(GameState == "popup" && popUp.isOpened) {
                     if (button.text == 'Next') {
                         mouse.pressed = false;
-                        popUp.isOpened = false;
-                        GameState = "game";
-                        player.level++; // NEXT LEVEL§
-                        player.startNewLevel();
+                        transitionEffect = true;
+                        setTimeout(function() {
+                            popUp.isOpened = false;
+                            GameState = "game";
+                            player.level++; // NEXT LEVEL§
+                            player.startNewLevel();
+                        }, 200);
+                        
                     }
                 }
             }
@@ -117,20 +125,35 @@ function checkClickTap() {
     }
 }
 function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    starField.update();
-    
-    if (GameState == "game") {
-        player.updateParticles(ctx);
+    if (!transitionEffect) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        starField.update();
+        
+        if (GameState == "game") {
+            player.updateParticles(ctx);
+        }
+        if (GameState == "menu") {}
+        if(GameState == "popup") {    
+            mouse.pressed = false;
+            popUp.openPopUp(player.level, player.timer.getTimeAsSummSeconds());
+        } 
+        myButtons.forEach(button => {
+            if(GameState == button.group) button.draw();
+        });
     }
-    if (GameState == "menu") {}
-    if(GameState == "popup") {
-        mouse.pressed = false;
-        popUp.openPopUp(player.level, player.timer.getTimeAsSummSeconds());
-    } 
-    myButtons.forEach(button => {
-        if(GameState == button.group) button.draw();
-    });
+    if (transitionEffect) {
+        transitionColor += 3;
+        ctx.fillStyle = 'black';
+        ctx.globalAlpha = transitionColor / 100;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (transitionColor >= 60) {
+            transitionEffect = false;
+            ctx.globalAlpha = 1;
+            transitionColor = 0;
+        }   
+    }
+
+    mouse.pressed = false;
     requestAnimationFrame(animate);
 }
 animate();

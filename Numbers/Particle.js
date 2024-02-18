@@ -34,14 +34,15 @@ class Particle {
     update() {
         if (mouse.pressed) {
             const distance = Math.hypot((mouse.x - this.x), (mouse.y - this.y));
-
+            
             if (distance <= this.radius) {
-                
                 if (this.number == this.player.currentNumber + 1) {
                     player.currentNumber++;
                     this.isSelected = true;
                     mouse.pressed = false;
+                    return;
                 } else if (!player.resetGame && !this.isSelected) {
+                    console.log("reset game");
                     player.resetGame = true;
                 }
             }

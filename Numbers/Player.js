@@ -25,7 +25,6 @@ class Player {
         }
     }
     createParticles() {
-
         this.particles = [];
         for (let i = 0; i < this.amountParticles; i++) {
             this.particles.push(new Particle(this.canvas, this, i + 1));
@@ -74,12 +73,15 @@ class Player {
             this.particles[i].update();
             if (this.particles[i].isSelected) countSelected++;
         }
-        if (countSelected == this.amountParticles) {
+        if (countSelected == this.amountParticles && transitionEffect == false) {
             // открываем ПопАп и передаём туда уровень и текущее время
-            GameState = "popup"; 
+            transitionEffect = true;
             this.timer.stop();
             this.particles = [];
-            //this.startNewLevel(); // этот метод вызываем, когда нажмём кнопку в ПопАп "дальше"
+            setTimeout(function() {
+                GameState = "popup"; 
+            }, 200);
+            
         }
         this.showInfoText();
     }
@@ -131,7 +133,6 @@ class Player {
         }
     }
     resize(width, height) {
-        console.log("resize");
         this.resetGame = false;
         this.currentNumber = 0;
         this.canvas.width = width;
