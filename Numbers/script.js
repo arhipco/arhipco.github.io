@@ -28,10 +28,10 @@ myButtons.push(new myButton("menu", canvas.width / 2, canvas.height / 2, q / 2, 
 myButtons.push(new myButton("menu", canvas.width / 2 + q, canvas.height / 2 + q, q / 2, 'Hard', q / 4));
 
 // game button
-myButtons.push(new myButton("game", canvas.width / 20, canvas.height - canvas.width / 20, canvas.width / 20, 'M', canvas.width / 15));
+myButtons.push(new myButton("game", canvas.width / 30, canvas.height - canvas.width / 30, canvas.width / 30, 'M', canvas.width / 20));
+myButtons.push(new myButton("game", canvas.width / 2 + canvas.width / 8, canvas.height - canvas.width / 30, canvas.width / 30, 'R', canvas.width / 20));
 
 // popUp buttons
-myButtons.push(new myButton("popup", q * 2.5, q*6, q, 'Restart', q / 2.5 ));
 myButtons.push(new myButton("popup", q * 6, q*6, q, 'Next', q / 2.5));
 
 // Handle mouse click event on Buttons
@@ -52,7 +52,7 @@ window.addEventListener('mouseup', e => {
     mouse.pressed = false;
 });
 window.addEventListener('keydown', e => {
-    if (e.key == 'm') this.toggleMusic();
+    if (e.key == 'm') player.toggleMusic();
 });
 window.addEventListener('mousemove', e => {
     mouse.x = e.x;
@@ -70,6 +70,7 @@ window.addEventListener('mousedown', e => {
         mouse.pressed = true;
         mouse.x = e.x;
         mouse.y = e.y; 
+        checkClickTap();
     }
 });
 function checkClickTap() {
@@ -92,20 +93,17 @@ function checkClickTap() {
                     GameState = "game";
                     player.startNewLevel();
                 }
-                if (GameState == "game") {
+                //if (GameState == "game") {
                     if (button.text == 'M') {
                         player.toggleMusic();
                     }
-                }
-                if (GameState == "gameover") {}
-                if(GameState == "popup") {
-                    if (button.text == 'Restart') {
-                        mouse.pressed = false;
+                    if (button.text == 'R') {
                         GameState = "menu";
-                        popUp.isOpened = false;
                         player.resetGame = true;
                         player.level = 1;
                     }
+                //}
+                if(GameState == "popup") {
                     if (button.text == 'Next') {
                         mouse.pressed = false;
                         popUp.isOpened = false;
@@ -121,12 +119,13 @@ function checkClickTap() {
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     starField.update();
-    checkClickTap();
+    
     if (GameState == "game") {
         player.updateParticles(ctx);
     }
     if (GameState == "menu") {}
     if(GameState == "popup") {
+        mouse.pressed = false;
         popUp.openPopUp(player.level, player.timer.getTimeAsSummSeconds());
     } 
     myButtons.forEach(button => {

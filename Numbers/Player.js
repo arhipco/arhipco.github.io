@@ -25,6 +25,8 @@ class Player {
         }
     }
     createParticles() {
+
+        this.particles = [];
         for (let i = 0; i < this.amountParticles; i++) {
             this.particles.push(new Particle(this.canvas, this, i + 1));
         }
@@ -87,14 +89,16 @@ class Player {
         this.context.fillStyle = 'green';
         this.context.textAlign = "left";
         this.context.font = "bold " + q / 1.2 + "px Courier";
-        this.context.fillText("Looking number: " + (this.currentNumber + 1), 10, this.canvas.width / 30);
-        this.context.fillText("Level: " + this.level, this.canvas.width / 2 + q * 2, this.canvas.width / 30);
-        this.context.fillText("play/pause music.", q * 2, this.canvas.height - q + q / 4);
-        this.context.fillText("Timer: " + this.timer.getTimeAsText(),  this.canvas.width / 2 + q * 2, this.canvas.height - q + q / 4);
+        this.context.fillText("Next number: " + (this.currentNumber + 1), 10, this.canvas.width / 30);
+        this.context.fillText("Level: " + this.level, this.canvas.width / 2, this.canvas.width / 30);
+        this.context.fillText("play/pause music.", q * 1.5, this.canvas.height - q + q / 4);
+        this.context.textAlign = "right";
+        this.context.fillText(this.timer.getTimeAsText() + " ",  this.canvas.width, this.canvas.width / 30);
+        this.context.fillText("restart game ", this.canvas.width, this.canvas.height - q + q / 4);
     }
 
     connectParticles(context) {
-        const maxDistance = this.canvas.width / 4;
+        const maxDistance = Math.max(this.canvas.width, this.canvas.height) / 4;
         context.lineWidth = 3;
         context.strokeStyle = 'white';
         for (let a = 0; a < this.particles.length; a++) {
@@ -127,6 +131,7 @@ class Player {
         }
     }
     resize(width, height) {
+        console.log("resize");
         this.resetGame = false;
         this.currentNumber = 0;
         this.canvas.width = width;

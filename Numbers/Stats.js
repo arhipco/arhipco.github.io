@@ -95,7 +95,6 @@ class Stats {
             this.timesEasy[this.levelKey].sort((a, b) => a - b);  
             this.timesEasy[this.levelKey] = this.timesEasy[this.levelKey].filter((element, index) => this.timesEasy[this.levelKey].indexOf(element) === index);
             if(this.timesEasy[this.levelKey].length > 5){
-                console.log(this.timesEasy[this.levelKey].length);
                 this.timesEasy[this.levelKey].pop();
             }
         }
@@ -104,7 +103,6 @@ class Stats {
             this.timesNormal[this.levelKey].sort((a, b) => a - b);  
             this.timesNormal[this.levelKey] = this.timesNormal[this.levelKey].filter((element, index) => this.timesNormal[this.levelKey].indexOf(element) === index);
             if(this.timesNormal[this.levelKey].length > 5){
-                console.log(this.timesNormal[this.levelKey].length);
                 this.timesNormal[this.levelKey].pop();
             }
         }
@@ -113,7 +111,6 @@ class Stats {
             this.timesHard[this.levelKey].sort((a, b) => a - b);  
             this.timesHard[this.levelKey] = this.timesHard[this.levelKey].filter((element, index) => this.timesHard[this.levelKey].indexOf(element) === index);
             if(this.timesHard[this.levelKey].length > 5){
-                console.log(this.timesHard[this.levelKey].length);
                 this.timesHard[this.levelKey].pop();
             }
         }

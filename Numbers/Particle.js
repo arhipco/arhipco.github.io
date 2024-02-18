@@ -45,7 +45,6 @@ class Particle {
                     player.resetGame = true;
                 }
             }
-
         }
         if (this.isSelected) {
             if (this.x != this.player.width / 2) {
